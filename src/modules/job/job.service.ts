@@ -5,11 +5,11 @@ export const jobService = {
   async createJob(input: CreateJobInput): Promise<Job> {
     return prisma.job.create({
       data: {
-        name: input.name,
-        payload: input.payload,
-        status: 'PENDING',
+        type: input.type,
+        payload: input.payload as any,
+        status: 'pending',
       },
-    }) as Promise<Job>;
+    }) as unknown as Promise<Job>;
   },
 
   async getJobs(): Promise<Job[]> {

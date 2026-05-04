@@ -1,4 +1,5 @@
-import { buildApp } from "./app";
+import { buildApp } from './app';
+import { startJobWorker } from './workers/job.worker';
 
 const start = async () => {
   const app = await buildApp();
@@ -10,6 +11,9 @@ const start = async () => {
     }
     console.log(`Server running at ${address}`);
   });
+
+  // Start background worker
+  await startJobWorker();
 };
 
 start();

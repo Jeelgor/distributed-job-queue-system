@@ -1,19 +1,21 @@
-export type JobStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+export type JobStatus = 'pending' | 'running' | 'completed' | 'failed';
 
 export interface Job {
   id: string;
-  name: string;
+  type: string;
   payload: Record<string, unknown>;
   status: JobStatus;
+  attempts: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface CreateJobInput {
-  name: string;
+  type: string;
   payload: Record<string, unknown>;
 }
 
 export interface UpdateJobInput {
-  status?: JobStatus;
+  status?: JobStatus | undefined;
+  attempts?: number | undefined;
 }

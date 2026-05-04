@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
 export const createJobSchema = z.object({
-  name: z.string().min(1, 'Job name is required'),
+  type: z.string().min(1, 'Job type is required'),
   payload: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const updateJobSchema = z.object({
-  status: z.enum(['PENDING', 'RUNNING', 'COMPLETED', 'FAILED']).optional(),
+  status: z.enum(['pending', 'running', 'completed', 'failed']).optional(),
+  attempts: z.number().int().min(0).optional(),
 });
 
 export const jobParamsSchema = z.object({
