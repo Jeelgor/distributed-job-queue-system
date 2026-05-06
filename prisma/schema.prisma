@@ -17,6 +17,8 @@ model Job {
   payload   Json
   status    String   @default("pending")
   attempts  Int      @default(0)
+  maxAttempts Int     @default(3)
+  nextRunAt  DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
