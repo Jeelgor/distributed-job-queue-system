@@ -12,8 +12,8 @@ const start = async () => {
     console.log(`Server running at ${address}`);
   });
 
-  // Start background worker
-  await startJobWorker();
+  // Start BullMQ worker (synchronous — registers listeners)
+  startJobWorker();
 };
 
 start();
