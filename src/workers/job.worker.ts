@@ -6,10 +6,19 @@ import { logger } from '../utils/logger';
 import type { Job } from '../modules/job/job.types';
 
 const QUEUE_NAME = 'job-queue';
-const CONCURRENCY = 5;
+const CONCURRENCY = parseInt(process.env['WORKER_CONCURRENCY'] ?? '500', 10);
+const WORKER_DELAY_MS = process.env['WORKER_DELAY_MS'] ?? '0';
+const WORKER_FAILURE_RATE = parseFloat(process.env['WORKER_FAILURE_RATE'] ?? '0');
 
-// Random delay between 3–5 seconds to simulate real work
+// Configurable delay — set WORKER_DELAY_MS=0 for benchmark mode (no delay)
 function simulatedDelay(): Promise<void> {
+  if (WORKER_DELAY_MS !== undefined) {
+    const delayMs = parseInt(WORKER_DELAY_MS, 10);
+    if (delayMs <= 0) return Promise.resolve();
+    const ms = delayMs + Math.random() * (delayMs * 0.5);
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+  // Default: 3–5 second random delay
   const ms = 3000 + Math.random() * 2000;
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -47,26 +56,22 @@ async function processJob(bullJob: BullJob): Promise<void> {
   const attemptNumber = bullJob.attemptsMade + 1;
   const maxAttempts = bullJob.opts.attempts ?? 5;
 
-  logger.info({ jobId, bullJobId: bullJob.id, attempt: attemptNumber }, 'Job received');
-
   // Fetch full job data from DB
   const job = await fetchJob(jobId);
 
   // Mark as processing in DB
   await markProcessing(jobId);
-  logger.info({ jobId, type: job.type }, 'Job processing');
 
   // Simulate work
   await simulatedDelay();
 
-  // Randomly fail 20% of the time to exercise retry path
-  if (Math.random() < 0.2) {
+  // Configurable failure rate — set WORKER_FAILURE_RATE=0 for benchmark mode
+  if (WORKER_FAILURE_RATE > 0 && Math.random() < WORKER_FAILURE_RATE) {
     throw new Error('Simulated processing failure');
   }
 
   // Success
   await markCompleted(jobId);
-  logger.info({ jobId, type: job.type, attempt: attemptNumber }, 'Job completed successfully');
 }
 
 export function startJobWorker(): void {

@@ -6,7 +6,11 @@
     "dev": "ts-node-dev --respawn src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bench": "ts-node -P benchmarks/tsconfig.json benchmarks/benchmark.ts",
+    "bench:load": "ts-node -P benchmarks/tsconfig.json benchmarks/load-test.ts",
+    "bench:quick": "ts-node -P benchmarks/tsconfig.json benchmarks/benchmark.ts --scale 100 --skip-scalability",
+    "bench:50k": "ts-node -P benchmarks/tsconfig.json benchmarks/benchmark.ts --scale 50000 --skip-scalability"
   },
   "keywords": [],
   "author": "",

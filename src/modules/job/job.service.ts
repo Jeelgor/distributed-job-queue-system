@@ -4,7 +4,6 @@ import type { CreateJobInput, UpdateJobInput, Job, JobStatus, JobStats, JobListQ
 
 export const jobService = {
   async createJob(input: CreateJobInput): Promise<Job> {
-    // 1. Persist to DB — source of truth
     const job = await prisma.job.create({
       data: {
         type: input.type,
